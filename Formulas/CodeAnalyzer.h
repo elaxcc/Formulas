@@ -11,22 +11,22 @@ namespace Formula
 		CodeAnalyzer();
 		~CodeAnalyzer();
 
-		double calculate();
-		void parse(const std::string& text);
+		void lexical_analysis(const std::string& text_code);
+		void parser();
 
 	private:
-		typedef std::string Lexem;
+		typedef std::string Tocken;
 
-	public:
-		bool is_number(const std::string& lexem);
+		bool is_number(const std::string& tocken);
+		bool is_spaces_only(const std::string& tocken);
 
-		std::string get_operator(const std::string& lexem);
+		std::string remove_whitespace(const std::string& tocken);
 		bool check_operator(const std::string& found_operator);
 
 	private:
 		std::vector<std::string> operators_list_;
 		std::list<boost::shared_ptr<IElement>> elements_;
-		std::list<Lexem> lexem_;
+		std::list<Tocken> tockens_;
 	};
 
 } // Formula

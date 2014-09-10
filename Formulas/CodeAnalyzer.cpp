@@ -9,9 +9,10 @@
 namespace
 {
 
-	const std::string regex_separators = "\\W+";
-	const std::string regex_is_number = "\\d*\\.?\\d*";
-	const std::string regex_find_operator = "\\S+"; // оператор в разделителе может быть только один и несколько пробельных символов!
+	const std::string regex_separators = "\\s+|[\\W\\S]+|\\w+"; // все не цифровые и не буквенные символы
+	const std::string regex_is_number = "\\d*\\.?\\d*"; // число с плавающей точкой
+	const std::string regex_not_spaces = "\\S+"; // не пробельные символы
+	const std::string regex_spaces = "\\s+"; // пробельные символы
 
 } // namespace
 
@@ -27,29 +28,25 @@ namespace Formula
 	{
 		operators_list_.clear();
 		elements_.clear();
-		lexem_.clear();
+		tockens_.clear();
 	}
 
-	double CodeAnalyzer::calculate()
+	void CodeAnalyzer::lexical_analysis(const std::string& text_code)
 	{
-		return 0.0;
-	}
-
-	void CodeAnalyzer::parse(const std::string& text)
-	{
-		// ищем разделители (не буквенно-цифровые символы) лексем, по ним запоминаем точки биения текста
+		// разбиваем входной код на лексемы и пробельные символы
 		unsigned pos = 0;
 		boost::regex regex(regex_separators);
 		boost::smatch match;
-		std::string::const_iterator itbegin = text.begin();
-		std::string::const_iterator itend = text.end();
+		std::string::const_iterator itbegin = text_code.begin();
+		std::string::const_iterator itend = text_code.end();
 		std::vector<unsigned> devision_points; // список точек биения текста
 		while (boost::regex_search(itbegin, itend, match, regex))
 		{
+			std::string mmm = match.str();
+
 			pos += match.position();
 			devision_points.push_back(pos); // позиция начала разделителя
 			pos += match.str().length();
-			devision_points.push_back(pos); // позиция конца делителя
 
 			itbegin = match[0].second;
 		}
@@ -57,46 +54,47 @@ namespace Formula
 		{
 			devision_points.insert(devision_points.begin(), 0);
 		}
-		if (devision_points.back() != text.length()) // если в списке точек биения нет конца стороки, добавим её
+		if (devision_points.back() != text_code.length()) // если в списке точек биения нет конца стороки, добавим её
 		{
-			devision_points.insert(devision_points.begin(), text.length());
+			devision_points.insert(devision_points.end(), text_code.length());
 		}
 
-		// делим текст на лексемы по точкам биения
+		// Делим текст на лексемы по точкам биения, если лексема состоит только из пробельных
+		// символов, то её не включаем в список лексем.
 		for (unsigned i = 0; i < devision_points.size() - 1; i++)
 		{
-			lexem_.push_back(Lexem(text.substr(devision_points[i], devision_points[i + 1] - devision_points[i])));
-		}
-
-		// анализируем лексемы
-		for (std::list<Lexem>::iterator iter = lexem_.begin(); iter != lexem_.end(); ++iter)
-		{
-			std::string tmp;
-			if (is_number(*iter)) // если число
+			// из лексем убираем все пробельные символы
+			std::string dirty_lexem = text_code.substr(devision_points[i], devision_points[i + 1] - devision_points[i]);
+			if (!is_spaces_only(dirty_lexem))
 			{
-
-			}
-			else if ((tmp = get_operator(*iter)) != std::string()) // если оператор
-			{
-
+				tockens_.push_back(dirty_lexem);
 			}
 		}
 	}
 
-	bool CodeAnalyzer::is_number(const std::string& lexem)
+	void CodeAnalyzer::parser()
+	{
+
+	}
+
+	bool CodeAnalyzer::is_number(const std::string& tocken)
 	{
 		boost::regex regex(regex_is_number);
-		return boost::regex_match(lexem, regex);
+		return boost::regex_match(tocken, regex);
 	}
 
-	std::string CodeAnalyzer::get_operator(const std::string& lexem)
+	bool CodeAnalyzer::is_spaces_only(const std::string& tocken)
 	{
-		// в одном разделителе лексем может быть только один оператор и несколько пробельных символов
+		boost::regex regex(regex_spaces);
+		return boost::regex_match(tocken, regex);
+	}
 
-		boost::regex regex(regex_find_operator);
+	std::string CodeAnalyzer::remove_whitespace(const std::string& dirty_lexem)
+	{
+		boost::regex regex(regex_not_spaces);
 		boost::smatch match;
-		std::string::const_iterator itbegin = lexem.begin();
-		std::string::const_iterator itend = lexem.end();
+		std::string::const_iterator itbegin = dirty_lexem.begin();
+		std::string::const_iterator itend = dirty_lexem.end();
 		std::vector<std::string> operators;
 		while (boost::regex_search(itbegin, itend, match, regex))
 		{
