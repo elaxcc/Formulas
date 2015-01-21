@@ -90,7 +90,7 @@
   <ItemGroup>
     <ClInclude Include="CodeAnalyzer.h" />
     <ClInclude Include="IOperator.h" />
-    <ClInclude Include="Lexemes.h" />
+    <ClInclude Include="Token.h" />
     <ClInclude Include="IElement.h" />
     <ClInclude Include="Operand.h" />
     <ClInclude Include="BinarOperators.h" />
@@ -100,7 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CodeAnalyzer.cpp" />
-    <ClCompile Include="Lexemes.cpp" />
+    <ClCompile Include="Token.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Operand.cpp" />
     <ClCompile Include="BinarOperators.cpp" />
