@@ -5,6 +5,7 @@
 #include "BinarOperators.h"
 #include "Operand.h"
 #include "UnarOperations.h"
+#include "Token.h"
 
 namespace
 {
@@ -31,7 +32,7 @@ namespace Formula
 		tokens_.clear();
 	}
 
-	void CodeAnalyzer::lexical_analysis(const std::string& text_code)
+	void CodeAnalyzer::lexical_text_line_analysis(const std::string& text_code, unsigned line_num)
 	{
 		// разбиваем входной код на лексемы и пробельные символы
 		unsigned pos = 0;
@@ -64,12 +65,37 @@ namespace Formula
 		for (unsigned i = 0; i < division_points.size() - 1; i++)
 		{
 			// из лексем убираем все пробельные символы
-			std::string dirty_lexem = text_code.substr(division_points[i], division_points[i + 1] - division_points[i]);
-			if (!is_spaces_only(dirty_lexem))
+			std::string lexem = text_code.substr(division_points[i], division_points[i + 1] - division_points[i]);
+			if (!is_spaces_only(lexem))
 			{
-				tokens_.push_back(dirty_lexem);
+				tokens_.push_back(Token(lexem, line_num, division_points[i]));
 			}
 		}
+	}
+
+	void CodeAnalyzer::lexical_analysis(const std::string& text_code)
+	{
+		// анализ проводи построчно, так как если встретим ошибку то
+		// то её нужно выделить по строке и позиции
+
+		std::string line;
+		unsigned current_line_num = 0;
+		size_t current_text_code_pos = 0;
+		size_t found_pos = 0;
+		do
+		{
+			found_pos = text_code.find("\n", current_text_code_pos);
+			if (found_pos != std::string::npos)
+			{
+				line = text_code.substr(current_text_code_pos, found_pos - current_text_code_pos);
+				lexical_text_line_analysis(line, current_line_num);
+
+				current_text_code_pos = found_pos + 1;
+				current_line_num++;
+			}
+		} while (found_pos != std::string::npos);
+		line = text_code.substr(current_text_code_pos, text_code.length() - current_text_code_pos);
+		lexical_text_line_analysis(line, current_line_num);
 	}
 
 	void CodeAnalyzer::parser()

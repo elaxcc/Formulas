@@ -100,7 +100,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CodeAnalyzer.cpp" />
-    <ClCompile Include="Token.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Operand.cpp" />
     <ClCompile Include="BinarOperators.cpp" />

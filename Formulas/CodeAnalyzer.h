@@ -4,6 +4,7 @@
 
 namespace Formula
 {
+	class Token;
 
 	class CodeAnalyzer
 	{
@@ -11,11 +12,11 @@ namespace Formula
 		CodeAnalyzer();
 		~CodeAnalyzer();
 
+		void lexical_text_line_analysis(const std::string& text_code, unsigned line_num);
 		void lexical_analysis(const std::string& text_code);
 		void parser();
 
 	private:
-		typedef std::string Tocken;
 
 		bool is_number(const std::string& token);
 		bool is_spaces_only(const std::string& token);
@@ -26,7 +27,7 @@ namespace Formula
 	private:
 		std::vector<std::string> operators_list_;
 		std::list<boost::shared_ptr<IElement>> elements_;
-		std::list<Tocken> tokens_;
+		std::list<Token> tokens_;
 	};
 
 } // Formula
