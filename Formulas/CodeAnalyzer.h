@@ -17,16 +17,16 @@ namespace Formula
 	private:
 		typedef std::string Tocken;
 
-		bool is_number(const std::string& tocken);
-		bool is_spaces_only(const std::string& tocken);
+		bool is_number(const std::string& token);
+		bool is_spaces_only(const std::string& token);
 
-		std::string remove_whitespace(const std::string& tocken);
+		std::string remove_whitespace(const std::string& token);
 		bool check_operator(const std::string& found_operator);
 
 	private:
 		std::vector<std::string> operators_list_;
 		std::list<boost::shared_ptr<IElement>> elements_;
-		std::list<Tocken> tockens_;
+		std::list<Tocken> tokens_;
 	};
 
 } // Formula

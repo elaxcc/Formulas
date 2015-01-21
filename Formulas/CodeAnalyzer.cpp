@@ -28,7 +28,7 @@ namespace Formula
 	{
 		operators_list_.clear();
 		elements_.clear();
-		tockens_.clear();
+		tokens_.clear();
 	}
 
 	void CodeAnalyzer::lexical_analysis(const std::string& text_code)
@@ -39,35 +39,35 @@ namespace Formula
 		boost::smatch match;
 		std::string::const_iterator itbegin = text_code.begin();
 		std::string::const_iterator itend = text_code.end();
-		std::vector<unsigned> devision_points; // список точек биения текста
+		std::vector<unsigned> division_points; // список точек биения текста
 		while (boost::regex_search(itbegin, itend, match, regex))
 		{
-			std::string mmm = match.str();
+			std::string dummy_str = match.str();
 
 			pos += match.position();
-			devision_points.push_back(pos); // позиция начала разделителя
+			division_points.push_back(pos); // позиция начала разделителя
 			pos += match.str().length();
 
 			itbegin = match[0].second;
 		}
-		if (devision_points.front() != 0) // если в списке точек биения нет начала строки, добавим её
+		if (division_points.front() != 0) // если в списке точек биения нет начала строки, добавим её
 		{
-			devision_points.insert(devision_points.begin(), 0);
+			division_points.insert(division_points.begin(), 0);
 		}
-		if (devision_points.back() != text_code.length()) // если в списке точек биения нет конца стороки, добавим её
+		if (division_points.back() != text_code.length()) // если в списке точек биения нет конца стороки, добавим её
 		{
-			devision_points.insert(devision_points.end(), text_code.length());
+			division_points.insert(division_points.end(), text_code.length());
 		}
 
 		// Делим текст на лексемы по точкам биения, если лексема состоит только из пробельных
 		// символов, то её не включаем в список лексем.
-		for (unsigned i = 0; i < devision_points.size() - 1; i++)
+		for (unsigned i = 0; i < division_points.size() - 1; i++)
 		{
 			// из лексем убираем все пробельные символы
-			std::string dirty_lexem = text_code.substr(devision_points[i], devision_points[i + 1] - devision_points[i]);
+			std::string dirty_lexem = text_code.substr(division_points[i], division_points[i + 1] - division_points[i]);
 			if (!is_spaces_only(dirty_lexem))
 			{
-				tockens_.push_back(dirty_lexem);
+				tokens_.push_back(dirty_lexem);
 			}
 		}
 	}
@@ -77,16 +77,16 @@ namespace Formula
 
 	}
 
-	bool CodeAnalyzer::is_number(const std::string& tocken)
+	bool CodeAnalyzer::is_number(const std::string& token)
 	{
 		boost::regex regex(regex_is_number);
-		return boost::regex_match(tocken, regex);
+		return boost::regex_match(token, regex);
 	}
 
-	bool CodeAnalyzer::is_spaces_only(const std::string& tocken)
+	bool CodeAnalyzer::is_spaces_only(const std::string& token)
 	{
 		boost::regex regex(regex_spaces);
-		return boost::regex_match(tocken, regex);
+		return boost::regex_match(token, regex);
 	}
 
 	std::string CodeAnalyzer::remove_whitespace(const std::string& dirty_lexem)
