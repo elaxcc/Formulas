@@ -3,13 +3,13 @@
 namespace Formula
 {
 
-	struct error
+	struct Error
 	{
 		std::string text_;
 		unsigned line_;
 		unsigned column_;
 
-		error(const std::string& text, unsigned line, unsigned column)
+		Error(const std::string& text, unsigned line, unsigned column)
 			: text_(text)
 			, line_(line)
 			, column_(column)
@@ -17,15 +17,15 @@ namespace Formula
 		}
 	};
 
-	class error_list
+	class Error_list
 	{
 	public:
-		error_list();
-		~error_list();
+		Error_list();
+		~Error_list();
 
 	void add(const std::string& err, unsigned line, unsigned column);
 
 	private:
-		std::list<error> errors_;
+		std::list<Error> errors_;
 	};
 }

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "CodeAnalyzer.h"
+#include "LexicalAnalyzer.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -12,7 +12,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	int b = 2;
 	int k = a+++b;
 
-	Formula::CodeAnalyzer analyzer;
+	Formula::LexicalAnalyzer analyzer;
 
 	analyzer.lexical_analysis(str);
 	

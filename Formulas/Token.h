@@ -3,11 +3,21 @@
 namespace Formula
 {
 
-	struct Token
+	class Token
 	{
+	public:
+		enum Type
+		{
+			Type_Unknown,
+			Type_DoubleDigit,
+			Type_IntegerDigit,
+			Type_Operator
+		};
+		
 		std::string str_;
 		unsigned line_;
 		unsigned column_;
+		Type type_;
 
 
 		Token(const std::string& str, unsigned line, unsigned column)

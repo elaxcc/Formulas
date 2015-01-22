@@ -88,7 +88,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CodeAnalyzer.h" />
+    <ClInclude Include="LexicalAnalyzer.h" />
     <ClInclude Include="Errors.h" />
     <ClInclude Include="IOperator.h" />
     <ClInclude Include="Token.h" />
@@ -100,7 +100,7 @@
     <ClInclude Include="UnarOperations.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CodeAnalyzer.cpp" />
+    <ClCompile Include="LexicalAnalyzer.cpp" />
     <ClCompile Include="Errors.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Operand.cpp" />
