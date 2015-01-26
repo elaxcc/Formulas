@@ -20,10 +20,11 @@ namespace Formula
 		Type type_;
 
 
-		Token(const std::string& str, unsigned line, unsigned column)
+		Token(const std::string& str, unsigned line, unsigned column, Type type = Type_Unknown)
 			: str_(str)
 			, line_(line)
 			, column_(column)
+			, type_(type)
 		{
 		}
 
@@ -31,6 +32,7 @@ namespace Formula
 			: str_(token.str_)
 			, line_(token.line_)
 			, column_(token.column_)
+			, type_(token.type_)
 		{
 		}
 	};

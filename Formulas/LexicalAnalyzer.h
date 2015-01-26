@@ -2,10 +2,10 @@
 
 #include "IElement.h"
 #include "Errors.h"
+#include "Token.h"
 
 namespace Formula
 {
-	class Token;
 	class Error_list;
 
 	class LexicalAnalyzer
@@ -19,19 +19,21 @@ namespace Formula
 		void parser();
 
 	private:
-
-		bool is_spaces_only(const std::string& token);
-
-		bool is_double_digit(const Token& token);
-		bool is_integer_digit(const Token& token);
-		bool is_operator(const Token& token);
-
-
-		std::string remove_whitespace(const std::string& token);
-		bool check_operator(const std::string& found_operator);
+		static bool is_spaces_only(std::string& token);
+		static bool is_double_digit(Token& token);
+		static bool is_integer_digit(Token& token);
+		static bool is_operator(Token& token);
+		static bool is_exist_operator(Token& token);
 
 	private:
-		std::vector<std::string> operators_list_;
+		typedef boost::function<bool(Token&)> CheckFunction;
+		typedef std::map<Token::Type, CheckFunction> CheckList;
+
+	private:
+		static const std::vector<std::string> operators_list_;
+		static const CheckList check_list_;
+
+	private:
 		std::list<Token> tokens_;
 		Error_list errors_;
 	};

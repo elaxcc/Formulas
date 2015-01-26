@@ -4,7 +4,10 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	std::string str = " -- - 098hn +== \nk+j\n673 jk12e3;";
+	std::string str = 
+		" -- - 098hn +== \n"
+		"k+j\n"
+		"673 jk12e3;";
 	std::string str1 = "546.";
 	std::string str2 = "  +";
 

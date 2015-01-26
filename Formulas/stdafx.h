@@ -13,9 +13,12 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <map>
 
-#include <boost/foreach.hpp>
 #include <boost/assign/list_of.hpp>
+#include <boost/bind.hpp>
+#include <boost/foreach.hpp>
+#include <boost/function.hpp>
 #include <boost/regex.hpp>
 #include <boost/smart_ptr.hpp>
 

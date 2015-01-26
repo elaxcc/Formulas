@@ -5,13 +5,11 @@
 #include "BinarOperators.h"
 #include "Operand.h"
 #include "UnarOperations.h"
-#include "Token.h"
 
 namespace
 {
 
 	const std::string regex_separators = "\\s+|[\\W\\S]+|\\w+"; // регулярное выражение для поиска лексем
-	const std::string regex_not_spaces = "\\S+"; // не пробельные символы
 	const std::string regex_spaces = "\\s+"; // пробельные символы
 
 	const std::string regex_is_double_digit = "\\d*\\.\\d*"; // число с плавающей точкой
@@ -22,22 +20,20 @@ namespace
 
 namespace Formula
 {
+	const std::vector<std::string> LexicalAnalyzer::operators_list_ = boost::assign::list_of("-")("+")("*")("/");
+
+	const std::map<Token::Type, LexicalAnalyzer::CheckFunction> LexicalAnalyzer::check_list_ = boost::assign::map_list_of
+		(Token::Type_IntegerDigit, boost::bind(LexicalAnalyzer::is_integer_digit, _1))
+		(Token::Type_DoubleDigit, boost::bind(LexicalAnalyzer::is_double_digit, _1))
+		(Token::Type_Operator, boost::bind(LexicalAnalyzer::is_operator, _1));
 
 	LexicalAnalyzer::LexicalAnalyzer()
 	{
-		operators_list_ = boost::assign::list_of("-")("+")("*")("/");
 	}
 
 	LexicalAnalyzer::~LexicalAnalyzer()
 	{
-		operators_list_.clear();
 		tokens_.clear();
-	}
-
-	bool LexicalAnalyzer::is_spaces_only(const std::string& token)
-	{
-		boost::regex regex(regex_spaces);
-		return boost::regex_match(token, regex);
 	}
 
 	void LexicalAnalyzer::lexical_line_analysis(const std::string& code, unsigned line_num)
@@ -109,21 +105,20 @@ namespace Formula
 		std::list<Token>::iterator it = tokens_.begin();
 		for (; it != tokens_.end(); it++)
 		{
-			if (is_double_digit(*it))
+			// проходимся по списку возможных типов лексемы
+			CheckList::const_iterator checker = check_list_.begin();
+			for (; checker != check_list_.end(); ++checker)
 			{
-				it->type_ = Token::Type_DoubleDigit;
+				if (checker->second(*it))
+				{
+					it->type_ = checker->first;
+					break;
+				}
 			}
-			else if (is_integer_digit(*it))
+
+			// если тип лексемы остался Token::Type_Unknown, значит нужно сформировать ошибку
+			if (it->type_ == Token::Type_Unknown)
 			{
-				it->type_ = Token::Type_IntegerDigit;
-			}
-			else if (is_operator(*it))
-			{
-				it->type_ = Token::Type_Operator;
-			}
-			else
-			{
-				it->type_ = Token::Type_Unknown;
 				//!fixme add error
 			}
 		}
@@ -134,51 +129,35 @@ namespace Formula
 
 	}
 
-	bool LexicalAnalyzer::is_double_digit(const Token& token)
+	bool LexicalAnalyzer::is_spaces_only(std::string& token)
+	{
+		boost::regex regex(regex_spaces);
+		return boost::regex_match(token, regex);
+	}
+
+	bool LexicalAnalyzer::is_double_digit(Token& token)
 	{
 		boost::regex regex(regex_is_double_digit);
 		return boost::regex_match(token.str_, regex);
 	}
 
-	bool LexicalAnalyzer::is_integer_digit(const Token& token)
+	bool LexicalAnalyzer::is_integer_digit(Token& token)
 	{
 		boost::regex regex(regex_is_integer_digit);
 		return boost::regex_match(token.str_, regex);
 	}
 
-	bool LexicalAnalyzer::is_operator(const Token& token)
+	bool LexicalAnalyzer::is_operator(Token& token)
 	{
 		boost::regex regex(regex_is_operator);
-		return boost::regex_match(token.str_, regex);
+		return boost::regex_match(token.str_, regex) && is_exist_operator(token);
 	}
 
-	std::string LexicalAnalyzer::remove_whitespace(const std::string& dirty_lexem)
-	{
-		boost::regex regex(regex_not_spaces);
-		boost::smatch match;
-		std::string::const_iterator itbegin = dirty_lexem.begin();
-		std::string::const_iterator itend = dirty_lexem.end();
-		std::vector<std::string> operators;
-		while (boost::regex_search(itbegin, itend, match, regex))
-		{
-			operators.push_back(match.str());
-
-			itbegin = match[0].second;
-		}
-
-		if (operators.size() == 1)
-		{
-			return operators[0];
-		}
-		//!fixme создать сообщение о том что попалось несколько операторов
-		return std::string();
-	}
-
-	bool LexicalAnalyzer::check_operator(const std::string& found_operator)
+	bool LexicalAnalyzer::is_exist_operator(Token& token)
 	{
 		for (unsigned i = 0; i < operators_list_.size(); ++i)
 		{
-			if (operators_list_[i] == found_operator)
+			if (operators_list_[i] == token.str_)
 			{
 				return true;
 			}
