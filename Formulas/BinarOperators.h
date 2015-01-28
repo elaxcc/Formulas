@@ -4,6 +4,7 @@
 
 namespace Formula
 {
+
 	class BinarOperation : public IOperator
 	{
 	public:
@@ -103,4 +104,5 @@ namespace Formula
 		boost::shared_ptr<IElement> Create(const std::string& _operator,  boost::shared_ptr<IElement>& first,
 			const boost::shared_ptr<IElement>& second);
 	};
-}
+
+} // Formula

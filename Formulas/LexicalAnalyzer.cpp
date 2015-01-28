@@ -22,13 +22,11 @@ namespace Formula
 {
 	const std::vector<std::string> LexicalAnalyzer::operators_list_ = boost::assign::list_of("-")("+")("*")("/");
 
-	const std::map<Token::Type, LexicalAnalyzer::CheckFunction> LexicalAnalyzer::check_list_ = boost::assign::map_list_of
-		(Token::Type_IntegerDigit, boost::bind(LexicalAnalyzer::is_integer_digit, _1))
-		(Token::Type_DoubleDigit, boost::bind(LexicalAnalyzer::is_double_digit, _1))
-		(Token::Type_Operator, boost::bind(LexicalAnalyzer::is_operator, _1));
-
 	LexicalAnalyzer::LexicalAnalyzer()
 	{
+		check_list_.insert(std::make_pair(Token::Type_IntegerDigit, boost::bind(&LexicalAnalyzer::is_integer_digit, this, _1)));
+		check_list_.insert(std::make_pair(Token::Type_DoubleDigit, boost::bind(&LexicalAnalyzer::is_double_digit, this, _1)));
+		check_list_.insert(std::make_pair(Token::Type_Operator, boost::bind(&LexicalAnalyzer::is_operator, this, _1)));
 	}
 
 	LexicalAnalyzer::~LexicalAnalyzer()
@@ -151,6 +149,16 @@ namespace Formula
 	{
 		boost::regex regex(regex_is_operator);
 		return boost::regex_match(token.str_, regex) && is_exist_operator(token);
+
+		if (boost::regex_match(token.str_, regex))
+		{
+			if (is_exist_operator(token))
+			{
+				return true;
+			}
+			errors_.add_unknown_operator(token.str_, token.line_, token.column_);
+		}
+		return false;
 	}
 
 	bool LexicalAnalyzer::is_exist_operator(Token& token)

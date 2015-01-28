@@ -37,4 +37,4 @@ namespace Formula
 		}
 	};
 
-}
+} // Formula

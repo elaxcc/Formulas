@@ -42,4 +42,4 @@ namespace Formula
 		virtual int get_prior() { return 2; }
 	};
 
-}
+} // Formula

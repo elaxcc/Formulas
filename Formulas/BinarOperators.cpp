@@ -42,4 +42,4 @@ namespace Formula
 		return bin_operator;
 	}
 
-}
+} // Formulas

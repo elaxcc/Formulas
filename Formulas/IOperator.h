@@ -13,4 +13,5 @@ namespace Formula
 	public:
 		virtual int prior() = 0;
 	};
-}
+
+} // Formula

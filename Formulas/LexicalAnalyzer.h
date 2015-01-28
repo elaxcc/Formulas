@@ -19,11 +19,12 @@ namespace Formula
 		void parser();
 
 	private:
-		static bool is_spaces_only(std::string& token);
-		static bool is_double_digit(Token& token);
-		static bool is_integer_digit(Token& token);
-		static bool is_operator(Token& token);
-		static bool is_exist_operator(Token& token);
+		bool is_spaces_only(std::string& token);
+
+		bool is_double_digit(Token& token);
+		bool is_integer_digit(Token& token);
+		bool is_operator(Token& token);
+		bool is_exist_operator(Token& token);
 
 	private:
 		typedef boost::function<bool(Token&)> CheckFunction;
@@ -31,7 +32,7 @@ namespace Formula
 
 	private:
 		static const std::vector<std::string> operators_list_;
-		static const CheckList check_list_;
+		CheckList check_list_;
 
 	private:
 		std::list<Token> tokens_;
