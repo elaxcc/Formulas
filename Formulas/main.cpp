@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "LexicalAnalyzer.h"
+#include "CodeAnalyzer.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -12,9 +12,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::string str1 = "546.";
 	std::string str2 = "  +";
 
-	Formula::LexicalAnalyzer analyzer;
+	Formula::CodeAnalyzer analyzer;
 
-	analyzer.lexical_analysis(str);
+	analyzer.analysis(str);
 	
 	return 0; 
 }

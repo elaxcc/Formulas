@@ -37,4 +37,7 @@ namespace Formula
 		}
 	};
 
+	typedef std::list<Token> TokensList;
+	typedef boost::shared_ptr<TokensList> TokensListPtr;
+
 } // Formula

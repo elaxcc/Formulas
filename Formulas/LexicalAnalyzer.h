@@ -11,12 +11,14 @@ namespace Formula
 	class LexicalAnalyzer
 	{
 	public:
-		LexicalAnalyzer();
+		LexicalAnalyzer(const ErrorListPtr& errors_ptr);
 		~LexicalAnalyzer();
 
-		void lexical_line_analysis(const std::string& code, unsigned line_num);
-		void lexical_analysis(const std::string& code);
-		void parser();
+		void line_analysis(const std::string& code, unsigned line_num);
+		void analysis(const std::string& code);
+
+		TokensListPtr get_tokens() { return tokens_ptr_; }
+		ErrorListPtr get_errors() { return errors_ptr_; }
 
 	private:
 		bool is_spaces_only(std::string& token);
@@ -35,8 +37,8 @@ namespace Formula
 		CheckList check_list_;
 
 	private:
-		std::list<Token> tokens_;
-		Error_list errors_;
+		TokensListPtr tokens_ptr_;
+		ErrorListPtr errors_ptr_;
 	};
 
 } // Formula

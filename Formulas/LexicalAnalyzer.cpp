@@ -22,19 +22,22 @@ namespace Formula
 {
 	const std::vector<std::string> LexicalAnalyzer::operators_list_ = boost::assign::list_of("-")("+")("*")("/");
 
-	LexicalAnalyzer::LexicalAnalyzer()
+	LexicalAnalyzer::LexicalAnalyzer(const ErrorListPtr& errors_ptr)
+		: errors_ptr_(errors_ptr)
 	{
 		check_list_.insert(std::make_pair(Token::Type_IntegerDigit, boost::bind(&LexicalAnalyzer::is_integer_digit, this, _1)));
 		check_list_.insert(std::make_pair(Token::Type_DoubleDigit, boost::bind(&LexicalAnalyzer::is_double_digit, this, _1)));
 		check_list_.insert(std::make_pair(Token::Type_Operator, boost::bind(&LexicalAnalyzer::is_operator, this, _1)));
+
+		tokens_ptr_ = boost::make_shared<TokensList>();
 	}
 
 	LexicalAnalyzer::~LexicalAnalyzer()
 	{
-		tokens_.clear();
+		tokens_ptr_->clear();
 	}
 
-	void LexicalAnalyzer::lexical_line_analysis(const std::string& code, unsigned line_num)
+	void LexicalAnalyzer::line_analysis(const std::string& code, unsigned line_num)
 	{
 		// разбиваем входной код на лексемы и пробельные символы
 		unsigned pos = 0;
@@ -70,12 +73,12 @@ namespace Formula
 			std::string lexem = code.substr(division_points[i], division_points[i + 1] - division_points[i]);
 			if (!is_spaces_only(lexem))
 			{
-				tokens_.push_back(Token(lexem, line_num, division_points[i]));
+				tokens_ptr_->push_back(Token(lexem, line_num, division_points[i]));
 			}
 		}
 	}
 
-	void LexicalAnalyzer::lexical_analysis(const std::string& code)
+	void LexicalAnalyzer::analysis(const std::string& code)
 	{
 		// анализ проводим построчно, так как если встретим ошибку то
 		// то её нужно выделить по строке и позиции
@@ -90,18 +93,18 @@ namespace Formula
 			if (found_pos != std::string::npos)
 			{
 				line = code.substr(current_text_code_pos, found_pos - current_text_code_pos);
-				lexical_line_analysis(line, current_line_num);
+				line_analysis(line, current_line_num);
 
 				current_text_code_pos = found_pos + 1;
 				current_line_num++;
 			}
 		} while (found_pos != std::string::npos);
 		line = code.substr(current_text_code_pos, code.length() - current_text_code_pos);
-		lexical_line_analysis(line, current_line_num);
+		line_analysis(line, current_line_num);
 
 		// определяем тип лексемы и указываем в токене
-		std::list<Token>::iterator it = tokens_.begin();
-		for (; it != tokens_.end(); it++)
+		std::list<Token>::iterator it = tokens_ptr_->begin();
+		for (; it != tokens_ptr_->end(); it++)
 		{
 			// проходимся по списку возможных типов лексемы
 			CheckList::const_iterator checker = check_list_.begin();
@@ -120,11 +123,6 @@ namespace Formula
 				//!fixme add error
 			}
 		}
-	}
-
-	void LexicalAnalyzer::parser()
-	{
-
 	}
 
 	bool LexicalAnalyzer::is_spaces_only(std::string& token)
@@ -156,7 +154,7 @@ namespace Formula
 			{
 				return true;
 			}
-			errors_.add_unknown_operator(token.str_, token.line_, token.column_);
+			errors_ptr_->add_unknown_operator(token.str_, token.line_, token.column_);
 		}
 		return false;
 	}

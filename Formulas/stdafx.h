@@ -14,6 +14,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <stack>
 
 #include <boost/assign/list_of.hpp>
 #include <boost/bind.hpp>
