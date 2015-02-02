@@ -71,7 +71,68 @@ namespace Formula
 			std::string lexem = code.substr(division_points[i], division_points[i + 1] - division_points[i]);
 			if (!is_spaces_only(lexem))
 			{
-				tokens_ptr_->push_back(Token(lexem, line_num, division_points[i]));
+				Token token(lexem, line_num, division_points[i]);
+
+				// проходимся по списку возможных типов лексемы
+				CheckList::const_iterator checker = check_list_.begin();
+				for (; checker != check_list_.end(); ++checker)
+				{
+					if (checker->second(token))
+					{
+						token.type_ = checker->first;
+						break;
+					}
+				}
+
+				// если лексемой оказался токен состоящий из символов,
+				// используемых операторами, то есть вероятность, что
+				// в этой лексеме несколько операторов, проверим это
+				if (token.type_ == Token::Type_Operator && !is_exist_operator(token))
+				{
+					while (!token.str_.empty())
+					{
+						// Попробуем разбить на несколько операторов.
+						// Правило разбития: сначала ищим операторы максимальной длинны
+						// в начале лексемы из существующих. Потом для остатка лексемы
+						// повторяем эти действия. Итак пока строка не закончится либо пока
+						// ни найдём несуществующий оператор.
+						unsigned cur_pos_in_lexem = 0;
+						std::string temp_str;
+						OperatorsList::const_iterator op_it = c_operator_list.begin();
+						for (; op_it != c_operator_list.end(); ++op_it)
+						{
+							if (token.str_.find(op_it->first) == 0) // нашли оператор и он вначеле
+							{
+								// длинна найдинного оператора больше найденного ранее
+								if (temp_str.length() < op_it->first.length())
+								{
+									temp_str = op_it->first;
+								}
+							}
+						}
+						// если нашли оператор (temp_str - не пустая строка), то ложим текущий оператор
+						// в список токенов, удаляем оператор из начала лексемы
+						if (!temp_str.empty())
+						{
+							tokens_ptr_->push_back(Token(temp_str, token.line_,
+								token.column_ + cur_pos_in_lexem, Token::Type_Operator));
+							cur_pos_in_lexem = temp_str.length();
+
+							token.str_ = token.str_.substr(temp_str.length());
+						}
+					}
+				}
+				else
+				{
+					if (token.type_ != Token::Type_Unknown)
+					{
+						tokens_ptr_->push_back(token);
+					}
+					else
+					{
+						//!fixme add error
+					}
+				}
 			}
 		}
 	}
@@ -99,28 +160,6 @@ namespace Formula
 		} while (found_pos != std::string::npos);
 		line = code.substr(current_text_code_pos, code.length() - current_text_code_pos);
 		line_analysis(line, current_line_num);
-
-		// определяем тип лексемы и указываем в токене
-		std::list<Token>::iterator it = tokens_ptr_->begin();
-		for (; it != tokens_ptr_->end(); it++)
-		{
-			// проходимся по списку возможных типов лексемы
-			CheckList::const_iterator checker = check_list_.begin();
-			for (; checker != check_list_.end(); ++checker)
-			{
-				if (checker->second(*it))
-				{
-					it->type_ = checker->first;
-					break;
-				}
-			}
-
-			// если тип лексемы остался Token::Type_Unknown, значит нужно сформировать ошибку
-			if (it->type_ == Token::Type_Unknown)
-			{
-				//!fixme add error
-			}
-		}
 	}
 
 	bool LexicalAnalyzer::is_spaces_only(std::string& token)
@@ -144,21 +183,7 @@ namespace Formula
 	bool LexicalAnalyzer::is_operator(Token& token)
 	{
 		boost::regex regex(regex_is_operator);
-		return boost::regex_match(token.str_, regex) && is_exist_operator(token);
-
-		if (boost::regex_match(token.str_, regex))
-		{
-			if (is_exist_operator(token))
-			{
-				return true;
-			}
-			else
-			{
-				// сдесь может оказаться несколько операторов
-			}
-		}
-		errors_ptr_->add_unknown_operator(token.str_, token.line_, token.column_);
-		return false;
+		return boost::regex_match(token.str_, regex);
 	}
 
 	bool LexicalAnalyzer::is_exist_operator(Token& token)
