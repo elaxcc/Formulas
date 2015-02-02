@@ -11,8 +11,10 @@ namespace Formula
 	class LexicalAnalyzer
 	{
 	public:
-		LexicalAnalyzer(const ErrorListPtr& errors_ptr);
+		LexicalAnalyzer();
 		~LexicalAnalyzer();
+
+		void set_error_list(const ErrorListPtr& errors_ptr) { errors_ptr_ = errors_ptr; }
 
 		void line_analysis(const std::string& code, unsigned line_num);
 		void analysis(const std::string& code);
@@ -33,7 +35,6 @@ namespace Formula
 		typedef std::map<Token::Type, CheckFunction> CheckList;
 
 	private:
-		static const std::vector<std::string> operators_list_;
 		CheckList check_list_;
 
 	private:

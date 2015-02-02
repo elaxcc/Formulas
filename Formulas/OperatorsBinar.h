@@ -5,10 +5,10 @@
 namespace Formula
 {
 
-	class BinarOperation : public IOperator
+	class OperatorBinar : public IOperator
 	{
 	public:
-		BinarOperation(const boost::shared_ptr<IElement>& first, const boost::shared_ptr<IElement>& second);
+		OperatorBinar(const boost::shared_ptr<IElement>& first, const boost::shared_ptr<IElement>& second);
 
 	public: // IElement
 		virtual double get_value() { return 0; };
@@ -21,11 +21,11 @@ namespace Formula
 		boost::shared_ptr<IElement> second_;
 	};
 
-	class BinarOperatorMinus : public BinarOperation
+	class OperatorBinarMinus : public OperatorBinar
 	{
 	public:
-		BinarOperatorMinus(const boost::shared_ptr<IElement>& first, const boost::shared_ptr<IElement>& second)
-			: BinarOperation(first, second)
+		OperatorBinarMinus(const boost::shared_ptr<IElement>& first, const boost::shared_ptr<IElement>& second)
+			: OperatorBinar(first, second)
 		{
 		}
 
@@ -39,11 +39,11 @@ namespace Formula
 		virtual int get_prior() { return 2; }
 	};
 
-	class BinarOperatorPlus : public BinarOperation
+	class OperatorBinarPlus : public OperatorBinar
 	{
 	public:
-		BinarOperatorPlus(const boost::shared_ptr<IElement>& first, const boost::shared_ptr<IElement>& second)
-			: BinarOperation(first, second)
+		OperatorBinarPlus(const boost::shared_ptr<IElement>& first, const boost::shared_ptr<IElement>& second)
+			: OperatorBinar(first, second)
 		{
 		}
 
@@ -57,11 +57,11 @@ namespace Formula
 		virtual int get_prior() { return 2; }
 	};
 
-	class BinarOperatorMultiplication : public BinarOperation
+	class OperatorBinarMultiplication : public OperatorBinar
 	{
 	public:
-		BinarOperatorMultiplication(const boost::shared_ptr<IElement>& first, const boost::shared_ptr<IElement>& second)
-			: BinarOperation(first, second)
+		OperatorBinarMultiplication(const boost::shared_ptr<IElement>& first, const boost::shared_ptr<IElement>& second)
+			: OperatorBinar(first, second)
 		{
 		}
 
@@ -75,11 +75,11 @@ namespace Formula
 		virtual int get_prior() { return 1; }
 	};
 
-	class BinarOperatorDivision : public BinarOperation
+	class OperatorBinarDivision : public OperatorBinar
 	{
 	public:
-		BinarOperatorDivision(const boost::shared_ptr<IElement>& first, const boost::shared_ptr<IElement>& second)
-			: BinarOperation(first, second)
+		OperatorBinarDivision(const boost::shared_ptr<IElement>& first, const boost::shared_ptr<IElement>& second)
+			: OperatorBinar(first, second)
 		{
 		}
 
@@ -95,11 +95,11 @@ namespace Formula
 		virtual int get_prior() { return 1; }
 	};
 
-	class BinarOperationFactory
+	class OperatorBinarFactory
 	{
 	public:
-		BinarOperationFactory();
-		~BinarOperationFactory();
+		OperatorBinarFactory();
+		~OperatorBinarFactory();
 
 		boost::shared_ptr<IElement> Create(const std::string& _operator,  boost::shared_ptr<IElement>& first,
 			const boost::shared_ptr<IElement>& second);

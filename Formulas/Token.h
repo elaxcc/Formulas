@@ -19,6 +19,12 @@ namespace Formula
 		unsigned column_;
 		Type type_;
 
+		Token()
+			: line_(0)
+			, column_(0)
+			, type_(Type_Unknown)
+		{
+		}
 
 		Token(const std::string& str, unsigned line, unsigned column, Type type = Type_Unknown)
 			: str_(str)

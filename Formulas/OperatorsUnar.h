@@ -5,10 +5,10 @@
 namespace Formula
 {
 
-	class IUnarOperator : public IOperator
+	class IOperatorUnar : public IOperator
 	{
 	public:
-		IUnarOperator(const boost::shared_ptr<IElement>& first)
+		IOperatorUnar(const boost::shared_ptr<IElement>& first)
 			: first_(first)
 		{
 		}
@@ -24,11 +24,11 @@ namespace Formula
 		boost::shared_ptr<IElement> first_;
 	};
 
-	class UnarOperatorMinus : public IUnarOperator
+	class OperatorUnarMinus : public IOperatorUnar
 	{
 	public:
-		UnarOperatorMinus(const boost::shared_ptr<IElement>& first)
-			: IUnarOperator(first)
+		OperatorUnarMinus(const boost::shared_ptr<IElement>& first)
+			: IOperatorUnar(first)
 		{
 		}
 

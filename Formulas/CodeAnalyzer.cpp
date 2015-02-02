@@ -6,10 +6,10 @@ namespace Formula
 {
 
 	CodeAnalyzer::CodeAnalyzer()
-		: lexixal_analyzer_(errors_ptr_)
-		, syntactical_analyzer_(errors_ptr_)
 	{
 		errors_ptr_ = boost::make_shared<ErrorList>();
+		lexixal_analyzer_.set_error_list(errors_ptr_);
+		syntactical_analyzer_.set_error_list(errors_ptr_);
 	}
 
 	CodeAnalyzer::~CodeAnalyzer()
@@ -19,7 +19,7 @@ namespace Formula
 	void CodeAnalyzer::analysis(const std::string& code)
 	{
 		lexixal_analyzer_.analysis(code);
-		syntactical_analyzer_.analysis(lexixal_analyzer_.get_tokens());
+		syntactical_analyzer_.analysis_expr(lexixal_analyzer_.get_tokens());
 	}
 
 } // Formula

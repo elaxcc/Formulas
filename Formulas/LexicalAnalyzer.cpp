@@ -2,9 +2,10 @@
 
 #include "LexicalAnalyzer.h"
 
-#include "BinarOperators.h"
 #include "Operand.h"
-#include "UnarOperations.h"
+#include "OperatorsBinar.h"
+#include "OperatorsList.h"
+#include "OperatorsUnar.h"
 
 namespace
 {
@@ -20,10 +21,8 @@ namespace
 
 namespace Formula
 {
-	const std::vector<std::string> LexicalAnalyzer::operators_list_ = boost::assign::list_of("-")("+")("*")("/");
 
-	LexicalAnalyzer::LexicalAnalyzer(const ErrorListPtr& errors_ptr)
-		: errors_ptr_(errors_ptr)
+	LexicalAnalyzer::LexicalAnalyzer()
 	{
 		check_list_.insert(std::make_pair(Token::Type_IntegerDigit, boost::bind(&LexicalAnalyzer::is_integer_digit, this, _1)));
 		check_list_.insert(std::make_pair(Token::Type_DoubleDigit, boost::bind(&LexicalAnalyzer::is_double_digit, this, _1)));
@@ -69,7 +68,6 @@ namespace Formula
 		// символов, то её не включаем в список лексем.
 		for (unsigned i = 0; i < division_points.size() - 1; i++)
 		{
-			// из лексем убираем все пробельные символы
 			std::string lexem = code.substr(division_points[i], division_points[i + 1] - division_points[i]);
 			if (!is_spaces_only(lexem))
 			{
@@ -154,16 +152,21 @@ namespace Formula
 			{
 				return true;
 			}
-			errors_ptr_->add_unknown_operator(token.str_, token.line_, token.column_);
+			else
+			{
+				// сдесь может оказаться несколько операторов
+			}
 		}
+		errors_ptr_->add_unknown_operator(token.str_, token.line_, token.column_);
 		return false;
 	}
 
 	bool LexicalAnalyzer::is_exist_operator(Token& token)
 	{
-		for (unsigned i = 0; i < operators_list_.size(); ++i)
+		OperatorsList::const_iterator it = c_operator_list.begin();
+		for (; it != c_operator_list.end(); ++it)
 		{
-			if (operators_list_[i] == token.str_)
+			if (it->first == token.str_)
 			{
 				return true;
 			}

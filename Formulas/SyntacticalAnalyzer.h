@@ -2,6 +2,7 @@
 
 #include "Token.h"
 #include "Errors.h"
+#include "Tree.h"
 
 namespace Formula
 {
@@ -9,17 +10,17 @@ namespace Formula
 	class SyntacticalAnalyzer
 	{
 	public:
-		SyntacticalAnalyzer(const ErrorListPtr& errors_ptr);
+		SyntacticalAnalyzer();
 		~SyntacticalAnalyzer();
 
-		void analysis(const boost::shared_ptr<std::list<Token>>& tokens);
+		void set_error_list(const ErrorListPtr& errors_ptr) { errors_ptr_ = errors_ptr; }
 
-	private:
-		void process_digit(const Token& token);
-		void process_operator(const Token& token);
+		void analysis_expr(const boost::shared_ptr<std::list<Token>>& tokens);
 
 	private:
 		std::stack<Token> tmp_tokens_stack_;
+		TreeNode parse_tree_;
+
 		ErrorListPtr errors_ptr_;
 	};
 

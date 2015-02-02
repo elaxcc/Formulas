@@ -8,7 +8,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		" -- - 098hn +== \n"
 		"k+j\n"
 		"673 jk12e3;";*/
-		"1+2*3";
+		"1+2*(-3+4)";
 	std::string str1 = "546.";
 	std::string str2 = "  +";
 
